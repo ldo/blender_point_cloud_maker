@@ -111,24 +111,29 @@ class MakePointCloud(bpy.types.Operator) :
             random.seed(self.seed)
         #end if
         try :
+            if self.nr_points <= 0 :
+                raise Failure("must produce at least one point")
+            #end if
             for m in self.imports.split(",") :
                 m = m.strip()
                 if len(m) != 0 :
-                    exec("import " + m, locals())
+                    exec("import " + m, globals())
                 #end if
             #end for
             if self.text_block != " " :
-                exec(bpy.data.texts[self.text_block].as_string())
+                exec(bpy.data.texts[self.text_block].as_string(), globals())
             #end if
-            func = eval(self.function)
+            func = eval(self.function, globals())
             vertices = []
-            for i in range(0, self.nr_points) :
+            while True :
                 # rejection sampling algorithm <http://en.wikipedia.org/wiki/Rejection_sampling>
                 x = random.uniform(-1, 1)
                 y = random.uniform(-1, 1)
                 z = random.uniform(-1, 1)
                 if random.uniform(0, self.max_density) < func(x, y, z) :
                     vertices.append(mathutils.Vector((x, y, z)))
+                    if len(vertices) == self.nr_points :
+                        break
                 #end if
             #end for
             meshname = "point_cloud"
