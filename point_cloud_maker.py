@@ -26,7 +26,7 @@ bl_info = \
     {
         "name" : "Point Cloud Maker",
         "author" : "Lawrence D'Oliveiro <ldo@geek-central.gen.nz>",
-        "version" : (0, 0, 1),
+        "version" : (0, 2),
         "blender" : (2, 6, 6),
         "location" : "View 3D > Add > Mesh",
         "description" :
@@ -67,6 +67,19 @@ class MakePointCloud(bpy.types.Operator) :
         default = "math",
       )
 
+    text_block = bpy.props.EnumProperty \
+      (
+        name = "Text Block",
+        description =
+            "if nonempty, name of a text block containing Python code"
+            " to be exec’d before accessing the function",
+        items =
+            lambda self, context :
+                    ((" ", "(None)", ""),)
+                +
+                    tuple((t.name, t.name, "") for t in bpy.data.texts),
+      )
+
     max_density = bpy.props.FloatProperty \
       (
         name = "Max Density",
@@ -92,6 +105,7 @@ class MakePointCloud(bpy.types.Operator) :
         the_col = self.layout.column(align = True)
         the_col.prop(self, "function")
         the_col.prop(self, "imports")
+        the_col.prop(self, "text_block")
         the_col.prop(self, "max_density")
         the_col.prop(self, "nr_points")
         the_col.prop(self, "seed")
@@ -108,7 +122,10 @@ class MakePointCloud(bpy.types.Operator) :
                     exec("import " + m, locals())
                 #end if
             #end for
-            func = eval(self.function, locals())
+            if self.text_block != " " :
+                exec(bpy.data.texts[self.text_block].as_string())
+            #end if
+            func = eval(self.function)
             vertices = []
             for i in range(0, self.nr_points) :
                 # rejection sampling algorithm <http://en.wikipedia.org/wiki/Rejection_sampling>
