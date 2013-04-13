@@ -57,7 +57,6 @@ class MakePointCloud(bpy.types.Operator) :
         description = "probability density function f(x, y, z) where x, y, z each ∊ [-1, 1]",
         default = "lambda x, y, z : 1.0",
       )
-
     imports = bpy.props.StringProperty \
       (
         name = "Imports",
@@ -66,7 +65,6 @@ class MakePointCloud(bpy.types.Operator) :
             " that should be imported for defining the function",
         default = "math",
       )
-
     text_block = bpy.props.EnumProperty \
       (
         name = "Text Block",
@@ -79,21 +77,18 @@ class MakePointCloud(bpy.types.Operator) :
                 +
                     tuple((t.name, t.name, "") for t in bpy.data.texts),
       )
-
     max_density = bpy.props.FloatProperty \
       (
         name = "Max Density",
         description = "max value of probability density function",
         default = 1.0,
       )
-
     nr_points = bpy.props.IntProperty \
       (
         name = "Nr Points",
         description = "how many points to generate",
         default = 1000,
       )
-
     seed = bpy.props.IntProperty \
       (
         name = "Random Seed",
