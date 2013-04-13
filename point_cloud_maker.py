@@ -51,11 +51,21 @@ class MakePointCloud(bpy.types.Operator) :
     bl_label = "Point Cloud"
     bl_options = {"REGISTER", "UNDO"}
 
-    function = bpy.props.StringProperty \
+    density = bpy.props.StringProperty \
       (
-        name = "Function",
-        description = "probability density function f(x, y, z) where x, y, z each ∊ [-1, 1]",
+        name = "Density",
+        description =
+            "probability density function f(x, y, z) returning scalar"
+            " where x, y, z each ∊ [-1, 1]",
         default = "lambda x, y, z : 1.0",
+      )
+    warp = bpy.props.StringProperty \
+      (
+        name = "Warp",
+        description =
+            "optional space-warp function f(x, y, z) returning (x', y', z')"
+            " where x, y, z each ∊ [-1, 1]",
+        default = "",
       )
     imports = bpy.props.StringProperty \
       (
@@ -98,7 +108,8 @@ class MakePointCloud(bpy.types.Operator) :
 
     def draw(self, context) :
         the_col = self.layout.column(align = True)
-        the_col.prop(self, "function")
+        the_col.prop(self, "density")
+        the_col.prop(self, "warp")
         the_col.prop(self, "imports")
         the_col.prop(self, "text_block")
         the_col.prop(self, "max_density")
@@ -123,15 +134,20 @@ class MakePointCloud(bpy.types.Operator) :
             if self.text_block != " " :
                 exec(bpy.data.texts[self.text_block].as_string(), globals())
             #end if
-            func = eval(self.function, globals())
+            dens = eval(self.density, globals())
+            if len(self.warp) != 0 :
+                warp = eval(self.warp, globals())
+            else :
+                warp = lambda x, y, z : (x, y, z)
+            #end if
             vertices = []
             while True :
                 # rejection sampling algorithm <http://en.wikipedia.org/wiki/Rejection_sampling>
                 x = random.uniform(-1, 1)
                 y = random.uniform(-1, 1)
                 z = random.uniform(-1, 1)
-                if random.uniform(0, self.max_density) < func(x, y, z) :
-                    vertices.append(mathutils.Vector((x, y, z)))
+                if random.uniform(0, self.max_density) < dens(x, y, z) :
+                    vertices.append(mathutils.Vector(warp(x, y, z)))
                     if len(vertices) == self.nr_points :
                         break
                 #end if
