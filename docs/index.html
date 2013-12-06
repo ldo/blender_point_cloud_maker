@@ -1,0 +1,224 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=utf-8">
+<TITLE>Point Cloud Maker User Guide</TITLE>
+
+<STYLE TYPE="text/css">
+div.h1
+  {
+	font-size : x-large;
+	font-weight : bold;
+	text-align : center;
+  } /*div.h1*/
+div.h2
+  {
+	font-size : large;
+	font-weight : bold;
+  } /*div.h2*/
+div.h3
+  {
+	font-weight : bold;
+  } /*div.h3*/
+
+div.figure
+  {
+    text-align : center;
+  } /*div.figure*/
+div.note
+  {
+    margin : 2em 6em 2em 2em;
+	border-left : medium ridge black;
+	padding-left : 1em;
+  } /*div.note*/
+div.note:before
+  {
+    content : "☞ ";
+    font-size : larger;
+  } /*div.note:before*/
+
+div.code
+  {
+	display : block;
+	margin-left : 2em;
+	margin-right : 2em;
+	font-family : monospace;
+	white-space : pre;
+	background-color : #C0C0C0;
+  } /*div.code*/
+
+a
+  {
+	font-weight : bold;
+	color : #000080;
+	text-decoration : none;
+  } /*a*/
+</STYLE>
+</HEAD>
+<BODY STYLE="background-color : #F4F4F0">
+
+<DIV CLASS="h1">Point Cloud Maker 0.2 User Guide<BR>
+<A HREF="mailto:&quot;Lawrence D'Oliveiro&quot; &lt;ldo@geek-central.gen.nz&gt;">Lawrence D’Oliveiro</A><BR>
+2013 December 6</DIV>
+<DIV STYLE="position : fixed; height : auto; width : 20%; top : 1em; right : 1em; left : auto; background-color : #E8E8E0">Table of Contents
+<OL>
+<LI><A HREF="#Introduction">Introduction</A>
+<LI><A HREF="#Installation">Installation</A>
+<LI><A HREF="#Usage">Usage</A>
+<UL>
+<LI><A HREF="#Add">Adding a New Point Cloud Object</A>
+<LI><A HREF="#Settings">Point Cloud Settings</A>
+</UL>
+<LI><A HREF="#Examples">Examples</A>
+<UL>
+<LI><A HREF="#ExampleDefault">The Default Function</A>
+<LI><A HREF="#ExampleSimpleGalaxy">Simple Spiral Galaxy</A>
+</UL>
+</OL>
+</DIV>
+
+<DIV STYLE="width : 78%">
+
+<DIV CLASS="h2"><A NAME="Introduction"></A>Introduction</DIV>
+<P>Point Cloud Maker is an addon for <A HREF="http://www.blender.org/">Blender</A>
+to create simple clouds of points: these are mesh objects which consist only
+of vertices, without connecting edges or faces. Rendering these with
+halo materials can produce some interesting effects, such as starfields, perhaps
+even plasma or smoke/clouds.
+
+
+<DIV CLASS="h2"><A NAME="Installation"></A>Installation</DIV>
+<P>To install Point Cloud Maker, launch Blender,  bring up the
+User Preferences window, select the Add-Ons tab, and click the “Install Add-Ons”
+button. In the file selector dialog that comes up find your way to the directory
+containing the <TT>point_cloud_maker.py</TT> file, select it, and click the
+“Install Add-On...” button. This will take you back to Blender’s
+User Preferences window, where you should find that Point Cloud Maker is now listed among
+the available add-ons, which you can enable for the current document by ticking its
+checkbox.
+
+<DIV CLASS="h2"><A NAME="Usage"></A>Usage</DIV>
+<P>To use Point Cloud Maker, the basic steps are:
+<OL>
+<LI>(Optional) Create a text block in your Blender document containing additional
+Python code for use by the Point Cloud functions.
+<LI>Add a Point Cloud mesh to your scene.
+<LI>Set the parameters for the Point Cloud mesh: the density function, the (optional)
+warp function, and the (optional) name of the text block you previously created,
+if you made one.
+<LI>When you are happy with the appearance of the Point Cloud object, you can
+add further embellishments, such as
+<UL>
+<LI>Assign it a halo material for rendering as part of your scene; or
+<LI>Parent another object to it for duplication at each vertex (<I>DupliVerts</I>).
+</UL>
+</OL>
+
+<DIV CLASS="h3"><A NAME="Add"></A>Adding a New Point Cloud Object</DIV>
+<P>To add a new Point Cloud object to your scene, simply go to Blender’s
+Add menu (<B>SHIFT</B>+<B>AKEY</B>), and you should see, in the Mesh submenu,
+a new Point Cloud option:
+<DIV CLASS="figure"><IMG SRC="add_point_cloud.png" ALT="Add menu with Point Cloud option"></DIV>
+
+<DIV CLASS="h3"><A NAME="Settings"></A>Point Cloud Settings</DIV>
+<P>Immediately you have added a new Point Cloud object, you should see the
+following settings panel appear at the bottom of the Tool Shelf at the left of
+Blender’s 3D view (you can make the Tool Shelf visible with <B>TKEY</B> if it
+isn’t already).
+<DIV CLASS="figure"><IMG SRC="point_cloud_settings.png" ALT="Point cloud settings panel"></DIV>
+<UL>
+<LI>The <I>density function</I> is a function of the base <I>x</I>, <I>y</I> and <I>z</I>
+coordinates, and returns a value (in the range from 0 up to the Max Density)
+which governs the relative probability of a point appearing at that coordinate.
+Note that the base <I>x</I>, <I>y</I> and <I>z</I> coordinates must lie in the interval
+-1.0 to +1.0. However, you can of course scale up (or scale down) the point cloud object
+to a different size after making it. Or you can apply a warp function.
+<LI>The optional <I>warp function</I> takes the base <I>x</I>, <I>y</I> and <I>z</I>
+coordinates as arguments, and returns a tuple of transformed (<I>x</I>', <I>y</I>', <I>z</I>')
+coordinates. This allows you to transform the base coordinates to a different range of values;
+or by applying a more complex function, it can <I>warp</I> the coordinate space into
+an entirely different shape. This allows you to produce twisted shapes more easily
+than trying to figure out how to implement curved distributions directly in the
+density function.
+<LI>The <I>imports</I> field names one or more Python modules that are automatically
+imported before evaluating the text block, density and warp functions. The <TT>math</TT>
+module is probably the most useful, which is why it is included by default. If
+you want to import more than one, separate their names with commas.
+<LI>The <I>text block</I> menu lets you choose a previously-created text block; the
+contents of the block are executed as Python code before evaluating the
+density and warp functions. This allows you to define more complicated functions
+than might be expressible directly as single Python expressions, and use them
+in the density and warp functions.
+<LI>The <I>max density</I> field lets you tell Point Cloud Maker what to expect
+as the maximum value that the density function will return. This is used to normalize
+that value for calculating actual probabilities for generating points.
+<LI>The <I>number of points</I> field controls how many vertices are generated for
+the point cloud.
+<LI>The <I>random seed</I> is used to control the pseudorandom sequence for
+generating the point cloud. Choosing the same non-negative starting value should
+always produce the same pattern of points (assuming the other settings are the
+same). Entering a negative value here causes a truly random starting seed to
+be chosen, so you won’t get the same pattern twice!
+</UL>
+<DIV CLASS="note"><B>The density and warp functions must be Python functions.</B>
+Note how the default density function takes the form “<TT>lambda x, y, z : </TT> <I>expr</I>”,
+being an anonymous function of 3 arguments, returning a single real number. Alternatively,
+you can specify the name of a function defined in the text block.</DIV>
+<DIV CLASS="note"><B>Beware of changing the text block contents while adjusting the
+parameters of a point cloud object at the same time.</B> Because of a quirk in
+the way Blender implements undo/redo, you will find that <B>changes to your text
+block are lost</B> every time you change anything in the point cloud settings panel.
+If you want to make changes to the text block, first <I>delete</I> the point cloud
+you were trying to create, change the text, perhaps even save your Blender document
+for good measure, then add a new point cloud before making changes to its
+settings.</DIV>
+
+<DIV CLASS="h2"><A NAME="Examples"></A>Examples</DIV>
+<P>
+<DIV CLASS="h3"><A NAME="ExampleDefault"></A>The Default Function</DIV>
+<P>When you create a new point cloud, the initial default density function is
+“<TT>lambda x, y, z : 1.0</TT>”, with no warp function. This defines a uniform
+(constant) point density over a cube 2 units on a side—exactly the dimensions of the default
+cube in a new Blender document.
+<DIV CLASS="figure"><IMG SRC="default_cube_cloud.png" ALT="Point cloud with initial default settings"></DIV>
+<P>Change the density function to
+“<TT>lambda x, y, z : math.sqrt(x * x + y * y + z * z) &lt;= 1.0</TT>”, and you
+get a spherical (constant-radius) cloud. Now try putting additional multiplication
+factors on the <TT>x * x</TT>, <TT>y * y</TT> and <TT>z * z</TT> terms, and you
+can flatten or elongate the sphere along the respective axes, into an ellipsoidal shape.
+
+<DIV CLASS="h3"><A NAME="ExampleSimpleGalaxy"></A>Simple Spiral Galaxy</DIV>
+<P>In this example, the density and warp functions are defined in a text block.
+The density function, called <TT>densfunc</TT>, produces
+a flattened, ellipsoidal-shaped cloud of points, while the warp function,
+<TT>warpfunc</TT>, swirls the points around to create a two-armed galactic spiral
+shape. The swirl is implemented by calculating an angle <TT>theta</TT> which is
+proportional to the distance of the point from the centre, and then using that to apply
+a rotation of the coordinates about the <I>z</I>-axis.
+<DIV CLASS="code">import math
+
+def densfunc(x, y, z) :
+    r = math.sqrt(x * x + 3 * y * y + 40 * z * z)
+    theta = math.atan2(y, x)
+    return r &lt;= (abs(math.cos(theta)) + 8) / (abs(math.sin(theta)) + 8)
+#end densfunc
+
+def warpfunc(x, y, z) :
+    theta = math.sqrt(x * x + y * y) * 5
+    return (x * math.cos(theta) - y * math.sin(theta), x * math.sin(theta) + y* math.cos(theta), z)
+#end warpfunc
+</DIV>
+<P>Assuming the text block is called “<TT>defs</TT>”, the above definitions are
+then used to create a point cloud as follows:
+<DIV CLASS="figure"><IMG SRC="galaxy_settings.png" ALT="Galaxy settings panel"></DIV>
+<P>The resulting point cloud looks in the 3D view something like this:
+<DIV CLASS="figure"><IMG SRC="galaxy_screenshot.png" ALT="Galaxy point cloud"></DIV>
+<P>And rendered with a suitable halo material, produces an image like this:
+<DIV CLASS="figure"><IMG SRC="galaxy_halo.png" ALT="Galaxy point cloud with halo material"></DIV>
+
+<P>An example animation produced from a more elaborate version of this can be viewed
+<A HREF="https://vimeo.com/81079228">here</A>.
+
+</DIV>
+</BODY>
+</HTML>

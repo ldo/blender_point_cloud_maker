@@ -1,0 +1,9 @@
+Point Cloud Maker is an addon for Blender <http://www.blender.org/>
+to create simple clouds of points: these are mesh objects which consist only
+of vertices, without connecting edges or faces. Rendering these with
+halo materials can produce some interesting effects.
+
+The user manual can be found, in HTML format, in the docs/ subdirectory.
+Start with docs/index.html.
+
+Lawrence D'Oliveiro <ldo@geek-central.gen.nz>
