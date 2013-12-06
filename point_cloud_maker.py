@@ -158,6 +158,7 @@ class MakePointCloud(bpy.types.Operator) :
             the_obj = bpy.data.objects.new(meshname, the_mesh)
             the_mesh.update()
             context.scene.objects.link(the_obj)
+            the_obj.location = context.scene.cursor_location
             bpy.ops.object.select_all(action = "DESELECT")
             bpy.data.objects[meshname].select = True
             for vertex in the_mesh.vertices :
